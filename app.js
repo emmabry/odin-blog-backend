@@ -1,10 +1,8 @@
 const express = require('express')
 const session = require('express-session');
-const path = require("node:path");
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const prisma = require('./prismaClient'); 
 const passport = require('passport')
-const bcrypt = require("bcryptjs")
 const LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
 
