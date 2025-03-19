@@ -2,13 +2,15 @@ const express = require('express')
 const session = require('express-session');
 const path = require("node:path");
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('./prismaClient'); 
 const passport = require('passport')
 const bcrypt = require("bcryptjs")
 const LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
 
-const prisma = new PrismaClient();
+const postsRouter = require("./routes/postsRouter");
+const commentsRouter = require("./routes/commentsRouter");
+const usersRouter = require("./routes/usersRouter");
 
 const app = express();
 
@@ -21,7 +23,7 @@ app.use(
       resave: true,
       saveUninitialized: true,
       store: new PrismaSessionStore(
-      new PrismaClient(),
+      prisma,
       {
           checkPeriod: 2 * 60 * 1000,  //ms
           dbRecordIdIsSessionId: true,
@@ -34,6 +36,10 @@ app.use(
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
+app.use("/posts/", postsRouter);
+app.use("/comments/", commentsRouter);
+app.use("/users/", usersRouter);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`My first Express app - listening on port ${PORT}!`);
@@ -42,55 +48,3 @@ app.listen(PORT, () => {
 app.get('/', (req, res) => {
   res.send("Blog backend")
 })
-
-app.get('/posts', async (req, res, next) => {
-  const posts = await prisma.posts.findMany()
-  res.json({ posts: posts })
-})
-
-app.get('/posts/:id', async (req, res, next) => {
-  const post = await prisma.posts.findUnique({
-    where: { id: parseInt(req.params.id) }
-  });
-  res.json({ post: post })
-})
-
-app.get('/posts/:id/comments', async (req, res, next) => {
-  const comments = await prisma.comments.findMany({
-    where: { post_id: parseInt(req.params.post_id) }
-  });
-  res.json({ comments: comments })
-})
-
-app.get('/comments/:comment_id', async (req, res, next) => {
-  const comment = await prisma.comments.findMany({
-    where: { id: parseInt(req.params.post_id) }
-  });
-  res.json({ comment: comment })
-})
-
-app.get('/users', async (req, res, next) => {
-  const users = await prisma.users.findMany();
-  res.json({ users: users })
-});
-
-app.get('/users/:id', async (req, res, next) => {
-  const user = await prisma.users.findMany({
-    where: { id: req.params.id }
-  });
-  res.json({ user: user })
-});
-
-app.get('/users/:id/comments', async (req, res, next) => {
-  const comments = await prisma.comments.findMany({
-    where: { user_id: req.params.id }
-  });
-  res.json({ comments: comments })
-});
-
-app.get('/users/:id/posts', async (req, res, next) => {
-  const posts = await prisma.posts.findMany({
-    where: { user_id: req.params.id }
-  });
-  res.json({ posts: posts })
-});

@@ -1,0 +1,8 @@
+const { Router } = require("express");
+const commentsController = require("../controllers/commentsController");
+const commentsRouter = Router();
+
+commentsRouter.get("/:id", commentsController.getCommentById)
+
+
+module.exports = commentsRouter;
