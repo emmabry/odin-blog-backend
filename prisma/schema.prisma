@@ -35,3 +35,10 @@ model users {
   comments comments[]
   posts    posts[]
 }
+
+model Session {
+  id          String   @id @default(uuid())
+  sid         String   @unique
+  data        String?
+  expiresAt   DateTime?
+}
