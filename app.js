@@ -5,12 +5,12 @@ const prisma = require('./prismaClient');
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
-
 const postsRouter = require("./routes/postsRouter");
 const commentsRouter = require("./routes/commentsRouter");
 const usersRouter = require("./routes/usersRouter");
 
 const app = express();
+app.use(express.json());
 
 app.use(
   session({

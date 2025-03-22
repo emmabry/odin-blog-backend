@@ -1,4 +1,6 @@
 const prisma = require('../prismaClient'); 
+const bcrypt = require('bcryptjs')
+
 
 async function getAllUsers(req, res) {
     const users = await prisma.users.findMany();
@@ -26,9 +28,38 @@ async function getPostsByUser(req, res) {
     res.json({ posts: posts })
 }
 
+async function deleteUser(req, res) {
+    try { const user = await prisma.user.delete({
+        where: { id: parseInt(req.params.id) }
+    })
+    res.json(user) 
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            return res.status(404).json({ error: 'User not found' }); 
+        }
+        res.status(500).json({ error: 'Failed to delete user' });
+    }};
+
+async function createUser(req, res) {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    try { const user = await prisma.users.create({
+        data: {
+            username: req.body.username,
+            email: req.body.email,
+            password: hashedPassword
+        }}
+    );
+    res.json(user) 
+    } catch (error) {
+    res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
     getCommentsByUser,
-    getPostsByUser
+    getPostsByUser,
+    deleteUser,
+    createUser
 }
