@@ -46,3 +46,7 @@ app.listen(PORT, () => {
 app.get('/', (req, res) => {
   res.send("Blog backend")
 })
+
+// TODO: Update comments structure so that it doesn't require a user_id, just a name
+// TODO: Frontend 1 has access to: GET posts/comments, POST comment
+// TODO: Frontend 2 has access to everything - needs jwt authentication

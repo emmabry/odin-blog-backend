@@ -11,7 +11,7 @@ async function createComment(req, res) {
     try { const comment = await prisma.comments.create({
         data: {
             post_id: req.body.post_id,
-            user_id: req.body.user_id,
+            name: req.body.name || "Anonymous",
             content: req.body.content
         }}
     );
