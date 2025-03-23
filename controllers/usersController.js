@@ -1,24 +1,16 @@
 const prisma = require('../prismaClient'); 
 const bcrypt = require('bcryptjs')
 
-
 async function getAllUsers(req, res) {
     const users = await prisma.users.findMany();
     res.json({ users: users })
 }
 
 async function getUserById(req, res) {
-    const user = await prisma.users.findMany({
+    const user = await prisma.users.findUnique({
         where: { id: parseInt(req.params.id) }
     });
     res.json({ user: user })
-}
-
-async function getCommentsByUser(req, res) {
-    const comments = await prisma.comments.findMany({
-        where: { user_id: parseInt(req.params.id) }
-    });
-    res.json({ comments: comments })
 }
 
 async function getPostsByUser(req, res) {
@@ -58,7 +50,6 @@ async function createUser(req, res) {
 module.exports = {
     getAllUsers,
     getUserById,
-    getCommentsByUser,
     getPostsByUser,
     deleteUser,
     createUser

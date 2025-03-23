@@ -3,6 +3,7 @@ const session = require('express-session');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const prisma = require('./prismaClient'); 
 const passport = require('passport')
+const jwt = require('jsonwebtoken')
 const LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
 const postsRouter = require("./routes/postsRouter");
@@ -47,6 +48,17 @@ app.get('/', (req, res) => {
   res.send("Blog backend")
 })
 
-// TODO: Update comments structure so that it doesn't require a user_id, just a name
-// TODO: Frontend 1 has access to: GET posts/comments, POST comment
-// TODO: Frontend 2 has access to everything - needs jwt authentication
+app.post('/login', (req, res) => {
+  const user = {
+    id: 1,
+    username: 'emma',
+    email: 'emma@bryan.com'
+  }
+  jwt.sign({ user: user }, 'secretkey', (err, token) => {
+    res.json(
+      {token : token}
+    );
+  });
+})
+
+// TODO: Require JWT auth for: delete comment, delete post, create post, getAllUsers, deleteUser, createUser, getUserById?
